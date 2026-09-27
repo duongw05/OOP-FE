@@ -1,40 +1,110 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/webstorm-icon-logo.svg" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WS playground</title>
-  <link rel="stylesheet" href="/style.css">
+  <title>UTC-SMS | Hệ Thống Quản Lý Đào Tạo Tín Chỉ ĐH Giao Thông Vận Tải</title>
+  <meta name="description" content="Hệ thống quản lý sinh viên và đăng ký tín chỉ trường Đại học Giao thông Vận tải (UTC-SMS) xây dựng theo mô hình hướng đối tượng OOAD, kiến trúc BCE, giải quyết tranh chấp đồng thời và tính điểm tự động." />
+  
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/src/style.css" />
 </head>
-<body>
-<header class="logo">
-  <a href="https://www.jetbrains.com/webstorm/">
-    <img src="/webstorm-logo.svg" alt="WebStorm logo" width="344"
-         height="90">
-  </a>
-</header>
-<main id="app">
-  <h1 class="title">
-    Thank you for trying it out. <br /> Your first project is up and running
-    now.
-  </h1>
-  <section class="counter">
-    <div class="counter-info">
-      <p class="counter-text">Counter is</p>
-      <p class="counter-value" id="counter-value"></p>
+<body class="dark-theme">
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main Application Wrapper -->
+  <div id="app" class="app-layout">
+    <!-- Top Navigation Header -->
+    <header class="top-navbar">
+      <div class="nav-left">
+        <button id="sidebar-toggle" class="btn-icon" aria-label="Toggle Sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+        <div class="brand">
+          <div class="brand-logo">UTC</div>
+          <div class="brand-text">
+            <span class="brand-title">UTC-SMS</span>
+            <span class="brand-subtitle">Hệ Thống Đào Tạo Tín Chỉ • OOAD K62</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-center">
+        <!-- Quick Role Switcher (Preset accounts from Appendix B) -->
+        <div class="role-switcher-group">
+          <span class="switcher-label">Vai trò:</span>
+          <button class="role-pill active" data-role="ROLE_STUDENT" data-user="211200123" title="Sinh viên Nguyễn Văn A (Giới hạn chức năng sinh viên)">
+            <span class="role-dot dot-student"></span> 👨‍🎓 SV: Nguyễn Văn A (Giới hạn)
+          </button>
+          <button class="role-pill" data-role="ROLE_STUDENT" data-user="211200125" title="Sinh viên Lê Hoàng C (Giới hạn chức năng, cảnh báo)">
+            <span class="role-dot dot-warning"></span> ⚠️ SV: Lê Hoàng C (Giới hạn)
+          </button>
+          <button class="role-pill" data-role="ROLE_LECTURER" data-user="GV001" title="Giảng viên TS. Nguyễn Hiếu Cường (Đầy đủ chức năng giảng viên)">
+            <span class="role-dot dot-lecturer"></span> 👨‍🏫 GV: TS. Nguyễn Hiếu Cường (Đầy đủ)
+          </button>
+          <button class="role-pill" data-role="ROLE_ADMIN" data-user="admin" title="Quản trị viên / Chuyên viên đào tạo (Toàn quyền quản trị)">
+            <span class="role-dot dot-admin"></span> 🛠️ Đào tạo / Admin (Đầy đủ)
+          </button>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <button id="theme-toggle" class="btn-icon" title="Đổi giao diện Sáng / Tối">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <div class="user-profile-badge" id="user-profile-btn">
+          <div class="avatar" id="user-avatar">A</div>
+          <div class="user-meta">
+            <span class="user-name" id="nav-user-name">Nguyễn Văn A</span>
+            <span class="user-role-tag" id="nav-user-role">Sinh Viên (Giới Hạn)</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container with Sidebar & Content View -->
+    <div class="app-body">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar" id="app-sidebar">
+        <nav class="nav-menu" id="nav-menu-container">
+          <!-- Dynamically rendered based on active role -->
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="connection-status">
+            <span class="status-indicator online"></span>
+            <span class="status-text">Backend: Spring Boot 8080 (Online)</span>
+          </div>
+          <div class="db-badge">RBAC: Phân Quyền Giảng Viên & Sinh Viên</div>
+        </div>
+      </aside>
+
+      <!-- View Containers (Rendered dynamically) -->
+      <main class="main-content" id="main-content">
+        <!-- Content will be injected by main.js -->
+      </main>
     </div>
-    <div class="counter-interaction">
-      <button id="increaseByOne" type="button">+1</button>
-      <button id="increaseByTwo" type="button">+2</button>
-      <button id="decreaseByOne" type="button">-1</button>
-      <button id="decreaseByTwo" type="button">-2</button>
+  </div>
+
+  <!-- Reusable Modal Container -->
+  <div id="modal-container" class="modal-backdrop hidden">
+    <div class="modal-window" id="modal-window">
+      <div class="modal-header">
+        <h3 id="modal-title" class="modal-title">Tiêu đề</h3>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Content injected dynamically -->
+      </div>
     </div>
-  </section>
-</main>
-<footer class="technologies">
-  <img src="/technologies.svg" alt="List of supported technologies">
-</footer>
-<script type="module" src="/src/main.js"></script>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>
